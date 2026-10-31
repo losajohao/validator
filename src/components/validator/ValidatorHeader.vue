@@ -83,36 +83,42 @@ const onFileChange = (event: Event) => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1.25rem;
-  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: nowrap;
 }
 
 .title-group {
   display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
 }
 
 .page-title {
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: #0f172a;
   margin: 0;
+  white-space: nowrap;
 }
 
 .file-badge {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: #475569;
   background-color: #e2e8f0;
-  padding: 0.2rem 0.6rem;
+  padding: 0.15rem 0.5rem;
   border-radius: 999px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .actions {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .hidden-input {
@@ -122,15 +128,16 @@ const onFileChange = (event: Event) => {
 .btn-export {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
   background-color: #0f172a;
   color: #ffffff;
   border: none;
-  padding: 0.6rem 1.1rem;
+  padding: 0.38rem 0.75rem;
   border-radius: 6px;
-  font-size: 0.925rem;
+  font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
   transition: background-color 0.15s ease;
 }
 
@@ -141,15 +148,16 @@ const onFileChange = (event: Event) => {
 .btn-import {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
   background-color: #16a34a;
   color: #ffffff;
   border: none;
-  padding: 0.6rem 1.1rem;
+  padding: 0.38rem 0.75rem;
   border-radius: 6px;
-  font-size: 0.925rem;
+  font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
   transition: background-color 0.15s ease;
 }
 

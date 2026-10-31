@@ -1,13 +1,18 @@
-import type { ITicketValidationRule } from '@/domain/contracts/validation-rule.contract'
-import type { TicketRecord } from '@/domain/models/ticket.model'
-import { getMinutesDifference, parseSgaDateTime } from '@/utils/date-time.util'
+import type {
+  DuplicableTicketRecord,
+  ITicketValidationRule,
+} from '@/domain/contracts/validation-rule.contract'
+import { getMinutesDifference, getRecordSgaTimestamp } from '@/utils/date-time.util'
 
 export interface DuplicateWindowOptions {
   minMinutes?: number
   maxMinutes?: number
 }
 
-export class AdministrativeDuplicateBackupRule implements ITicketValidationRule {
+export class AdministrativeDuplicateBackupRule<
+  T extends DuplicableTicketRecord = DuplicableTicketRecord,
+> implements ITicketValidationRule<T>
+{
   readonly id = 'ADMIN_DUPLICATE_BACKUP_SLA'
   readonly name = 'Duplicidad Principal/Backup en Red Administrativa'
   readonly description =
@@ -21,7 +26,7 @@ export class AdministrativeDuplicateBackupRule implements ITicketValidationRule 
     this.maxMinutes = options.maxMinutes ?? 15
   }
 
-  apply(records: TicketRecord[]): TicketRecord[] {
+  apply(records: T[]): T[] {
     const clonedRecords = records.map((rec) => ({ ...rec }))
 
     const adminIndices: number[] = []
@@ -29,7 +34,7 @@ export class AdministrativeDuplicateBackupRule implements ITicketValidationRule 
 
     clonedRecords.forEach((record, index) => {
       if (this.isAdministrativeNetwork(record.red)) {
-        const timestamp = parseSgaDateTime(record.fechaGeneracionSga)
+        const timestamp = getRecordSgaTimestamp(record)
         if (timestamp !== null && this.normalizeText(record.enlace) !== '') {
           adminIndices.push(index)
           parsedTimestamps.set(index, timestamp)
@@ -62,6 +67,7 @@ export class AdministrativeDuplicateBackupRule implements ITicketValidationRule 
           const principalRecord = roleA === 'PRINCIPAL' ? recordA : recordB
           const backupRecord = roleA === 'BACKUP' ? recordA : recordB
 
+          // Solo reemplaza ¿VA AL SLA? en los que cumplen la condición; el resto conserva su valor original
           principalRecord.vaAlSla = 'SÍ'
           if (!principalRecord.motivoRetiro) {
             principalRecord.motivoRetiro = ''

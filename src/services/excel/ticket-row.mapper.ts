@@ -2,36 +2,50 @@ import type { ICellValueParser, ITicketRowMapper } from '@/domain/contracts/exce
 import type {
   ColumnDefinition,
   ExcelImportResult,
-  TicketFieldKey,
   TicketRecord,
 } from '@/domain/models/ticket.model'
 import { TICKET_COLUMNS_SCHEMA } from '@/domain/schemas/ticket-columns.schema'
+import { setRawSgaTimestamp } from '@/utils/date-time.util'
 
 export class TicketRowMapper implements ITicketRowMapper {
   constructor(private readonly cellParser: ICellValueParser) {}
 
-  mapMatrixToTickets(
+  mapMatrixToTickets<T extends Record<string, any> = TicketRecord>(
     matrix: unknown[][],
     fileName: string,
-    schema: readonly ColumnDefinition[] = TICKET_COLUMNS_SCHEMA,
-  ): ExcelImportResult {
+    schema: readonly ColumnDefinition<string>[] = TICKET_COLUMNS_SCHEMA,
+  ): ExcelImportResult<T> {
     if (matrix.length === 0) {
       return {
         fileName,
         columns: schema,
         rows: [],
-        unmatchedExpectedHeaders: schema.map((col) => col.header),
+        unmatchedExpectedHeaders: schema.filter((col) => !col.isComputed).map((col) => col.header),
       }
     }
 
     const rawHeaders = (matrix[0] ?? []).map((cell) => this.normalizeHeader(String(cell ?? '')))
 
-    const columnIndexMap = new Map<TicketFieldKey, number>()
+    const columnIndexMap = new Map<string, number>()
     const unmatchedExpectedHeaders: string[] = []
 
     for (const columnDef of schema) {
-      const normalizedTarget = this.normalizeHeader(columnDef.header)
-      const foundIndex = rawHeaders.findIndex((header) => header === normalizedTarget)
+      const candidateNames = [columnDef.header, ...(columnDef.headerAliases ?? [])]
+      let foundIndex = -1
+
+      for (const candidate of candidateNames) {
+        const normalizedTarget = this.normalizeHeader(candidate)
+        foundIndex = rawHeaders.findIndex((header) => header === normalizedTarget)
+        if (foundIndex !== -1) break
+      }
+
+      if (
+        foundIndex === -1 &&
+        columnDef.fallbackColumnIndex !== undefined &&
+        rawHeaders.length > columnDef.fallbackColumnIndex
+      ) {
+        foundIndex = columnDef.fallbackColumnIndex
+      }
 
       if (foundIndex !== -1) {
         columnIndexMap.set(columnDef.key, foundIndex)
@@ -44,16 +58,19 @@ export class TicketRowMapper implements ITicketRowMapper {
       Array.isArray(row) && row.some((cell) => cell !== null && cell !== undefined && String(cell).trim() !== ''),
     )
 
-    const rows: TicketRecord[] = dataRows.map((rawRow) => {
-      const record = {} as Record<TicketFieldKey, string | number>
+    const rows: T[] = dataRows.map((rawRow) => {
+      const record: Record<string, string | number> = {}
 
       for (const columnDef of schema) {
         const colIdx = columnIndexMap.get(columnDef.key)
         const rawCellValue = colIdx !== undefined ? rawRow[colIdx] : ''
+        if (columnDef.key === 'fechaGeneracionSga') {
+          setRawSgaTimestamp(record, rawCellValue)
+        }
         record[columnDef.key] = this.cellParser.parse(rawCellValue, columnDef)
       }
 
-      return record as unknown as TicketRecord
+      return record as T
     })
 
     return {
@@ -73,4 +90,3 @@ export class TicketRowMapper implements ITicketRowMapper {
       .replace(/\s+/g, ' ')
   }
 }
-

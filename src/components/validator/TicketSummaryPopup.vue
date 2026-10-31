@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { TicketFieldKey, TicketRecord } from '@/domain/models/ticket.model'
 
 const props = defineProps<{
-  row: TicketRecord
+  row: Record<string, any>
 }>()
 
 const isOpen = ref(false)
 
 interface SummaryField {
-  key: TicketFieldKey
+  key: string
+  aliases?: string[]
   label: string
 }
 
-const SUMMARY_FIELDS: readonly SummaryField[] = [
+const TICKET_SUMMARY_FIELDS: readonly SummaryField[] = [
   { key: 'red', label: 'RED' },
   { key: 'enlace', label: 'ENLACE' },
   { key: 'proactivoReclamo', label: 'PROACTIVO/RECLAMO' },
@@ -29,24 +29,49 @@ const SUMMARY_FIELDS: readonly SummaryField[] = [
   { key: 'fechaFin', label: 'Fecha Fin' },
   {
     key: 'tiempoAtencionSinServicio',
+    aliases: ['tiempoDeAtencion'],
     label: 'TIEMPO DE ATENCIÓN /TIEMPO SIN SERVICIO (NO DISPONIBILIDAD-IMPUTABLE CLARO)',
   },
   { key: 'tiempoEnElCuadroAzul', label: 'TIEMPO EN EL CUADRO AZUL' },
   { key: 'evidenciaPausa', label: 'EVIDENCIA PAUSA: SI/NO/NO APLICA' },
   { key: 'evidenciaTerceros', label: 'EVIDENCIA TERCEROS: SI/NO/NO APLICA' },
   { key: 'responsable', label: 'RESPONSABLE' },
-  { key: 'imputacionEnElCuadroAzul', label: 'IMPUTACION EN EL CUADRO AZUL' },
+  {
+    key: 'imputacionEnElCuadroAzul',
+    aliases: ['imputacionEnCuadroAzul'],
+    label: 'IMPUTACION EN EL CUADRO AZUL',
+  },
   { key: 'tipificacion', label: 'TIPIFICACIÓN' },
 ]
 
-const summaryItems = computed(() =>
-  SUMMARY_FIELDS.map((field) => ({
-    label: field.label,
-    value: props.row[field.key] !== undefined && props.row[field.key] !== ''
-      ? String(props.row[field.key])
-      : '-',
-  })),
-)
+const CRUCE_SUMMARY_FIELDS: readonly SummaryField[] = [
+  { key: 'sede', label: 'SEDE' },
+  { key: 'principalBackup', label: 'principal/backup' },
+  { key: 'cid', label: 'CID' },
+  { key: 'nombreParaRegionales', label: 'NOMBRE PARA REGIONALES' },
+  { key: 'puestaEnOperacion', label: 'PUESTA EN OPERACIÓN' },
+]
+
+const isCruceRow = computed(() => 'sede' in props.row && !('ticket' in props.row))
+
+const summaryItems = computed(() => {
+  const fields = isCruceRow.value ? CRUCE_SUMMARY_FIELDS : TICKET_SUMMARY_FIELDS
+  return fields.map((field) => {
+    let rawVal = props.row[field.key]
+    if ((rawVal === undefined || rawVal === '') && field.aliases) {
+      for (const alias of field.aliases) {
+        if (props.row[alias] !== undefined && props.row[alias] !== '') {
+          rawVal = props.row[alias]
+          break
+        }
+      }
+    }
+    return {
+      label: field.label,
+      value: rawVal !== undefined && rawVal !== '' ? String(rawVal) : '-',
+    }
+  })
+})
 
 const openModal = () => {
   isOpen.value = true
@@ -61,7 +86,7 @@ const closeModal = () => {
   <button
     type="button"
     class="btn-summary"
-    title="Ver resumen del ticket"
+    title="Ver resumen del registro"
     @click="openModal"
   >
     <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none">
@@ -75,8 +100,12 @@ const closeModal = () => {
       <div class="summary-dialog" role="dialog" aria-modal="true">
         <header class="summary-header">
           <div class="summary-title-group">
-            <h3 class="summary-title">Resumen del Ticket #{{ row.ticket }}</h3>
-            <span class="summary-subtitle">CID: {{ row.cid }} | {{ row.priBk }}</span>
+            <h3 class="summary-title">
+              {{ isCruceRow ? `Resumen de Sede (CID ${row.cid})` : `Resumen del Ticket #${row.ticket}` }}
+            </h3>
+            <span class="summary-subtitle">
+              CID: {{ row.cid }} | {{ row.priBk ?? row.principalBackup ?? '' }}
+            </span>
           </div>
           <button
             type="button"
@@ -261,4 +290,3 @@ const closeModal = () => {
   background-color: #1e293b;
 }
 </style>
-

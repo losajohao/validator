@@ -1,8 +1,9 @@
 import type { ICellValueParser } from '@/domain/contracts/excel-parser.contract'
 import type { ColumnDefinition } from '@/domain/models/ticket.model'
+import { formatDateDdMmYyyy } from '@/utils/date-time.util'
 
 export class CellValueParser implements ICellValueParser {
-  parse(rawValue: unknown, column: ColumnDefinition): string | number {
+  parse(rawValue: unknown, column: ColumnDefinition<string>): string | number {
     if (rawValue === null || rawValue === undefined) {
       return column.dataType === 'number' ? 0 : ''
     }
@@ -23,7 +24,9 @@ export class CellValueParser implements ICellValueParser {
         }
         return strValue
       }
-      case 'datetime':
+      case 'datetime': {
+        return formatDateDdMmYyyy(rawValue)
+      }
       case 'enum':
       case 'string':
       default:
@@ -38,4 +41,3 @@ export class CellValueParser implements ICellValueParser {
     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
   }
 }
-

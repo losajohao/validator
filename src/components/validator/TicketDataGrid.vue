@@ -3,12 +3,16 @@ import { toRef } from 'vue'
 import ColumnHeaderTooltip from '@/components/validator/ColumnHeaderTooltip.vue'
 import DescriptiveCellPopup from '@/components/validator/DescriptiveCellPopup.vue'
 import TicketSummaryPopup from '@/components/validator/TicketSummaryPopup.vue'
-import { isPresenceColumn, useTicketFilter } from '@/composables/useTicketFilter'
-import type { ColumnDataType, ColumnDefinition, TicketRecord } from '@/domain/models/ticket.model'
+import {
+  isPresenceColumn,
+  MOTIVO_RETIRO_FILTER_OPTIONS,
+  useTicketFilter,
+} from '@/composables/useTicketFilter'
+import type { ColumnDataType, ColumnDefinition } from '@/domain/models/ticket.model'
 
 const props = defineProps<{
-  columns: readonly ColumnDefinition[]
-  rows: readonly TicketRecord[]
+  columns: readonly ColumnDefinition<string>[]
+  rows: readonly Record<string, any>[]
   hasFileLoaded: boolean
 }>()
 
@@ -89,9 +93,13 @@ const typeLabels: Record<ColumnDataType, string> = {
                     :aria-label="`Filtrar ${col.header} por contenido`"
                     @change="setPresenceFilter(col.key, ($event.target as HTMLSelectElement).value)"
                   >
-                    <option value="">Todos</option>
-                    <option value="WITH_CONTENT">Con motivo</option>
-                    <option value="EMPTY">Sin motivo</option>
+                    <option
+                      v-for="opt in MOTIVO_RETIRO_FILTER_OPTIONS"
+                      :key="opt.value"
+                      :value="opt.value"
+                    >
+                      {{ opt.label }}
+                    </option>
                   </select>
                   <input
                     v-else
@@ -193,6 +201,7 @@ const typeLabels: Record<ColumnDataType, string> = {
 <style scoped>
 .grid-container {
   flex: 1;
+  min-height: 0;
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
@@ -206,30 +215,29 @@ const typeLabels: Record<ColumnDataType, string> = {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.65rem 1rem;
+  gap: 0.75rem;
+  padding: 0.4rem 0.75rem;
   background-color: #f8fafc;
   border-bottom: 1px solid #e2e8f0;
-  flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .filter-controls {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  flex-wrap: wrap;
+  gap: 0.45rem;
 }
 
 .btn-search {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.35rem;
   background-color: #2563eb;
   color: #ffffff;
   border: none;
-  border-radius: 6px;
-  padding: 0.42rem 0.95rem;
-  font-size: 0.82rem;
+  border-radius: 5px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.15s ease;
@@ -242,8 +250,8 @@ const typeLabels: Record<ColumnDataType, string> = {
 .filter-meta {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  font-size: 0.82rem;
+  gap: 0.65rem;
+  font-size: 0.78rem;
   color: #475569;
 }
 
@@ -251,9 +259,9 @@ const typeLabels: Record<ColumnDataType, string> = {
   background-color: #ffffff;
   color: #475569;
   border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  padding: 0.4rem 0.75rem;
-  font-size: 0.8rem;
+  border-radius: 5px;
+  padding: 0.28rem 0.65rem;
+  font-size: 0.76rem;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease;
@@ -265,8 +273,9 @@ const typeLabels: Record<ColumnDataType, string> = {
 }
 
 .table-wrapper {
+  flex: 1;
+  min-height: 0;
   overflow: auto;
-  max-height: calc(100vh - 220px);
 }
 
 .data-grid {

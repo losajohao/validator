@@ -1,13 +1,20 @@
-import type { TicketRecord } from '../models/ticket.model'
+export interface DuplicableTicketRecord {
+  motivoRetiro: string
+  ticket: number | string
+  red: string
+  priBk: string
+  enlace: string
+  fechaGeneracionSga: string
+  vaAlSla: string
+}
 
-export interface ITicketValidationRule {
+export interface ITicketValidationRule<T extends DuplicableTicketRecord = DuplicableTicketRecord> {
   readonly id: string
   readonly name: string
   readonly description: string
-  apply(records: TicketRecord[]): TicketRecord[]
+  apply(records: T[]): T[]
 }
 
 export interface ITicketRuleEngine {
-  evaluateAll(records: TicketRecord[]): TicketRecord[]
+  evaluateAll<T extends DuplicableTicketRecord>(records: T[]): T[]
 }
-

@@ -3,9 +3,9 @@ import type { ISpreadsheetExporter } from '@/domain/contracts/excel-parser.contr
 import type { ColumnDefinition, TicketRecord } from '@/domain/models/ticket.model'
 
 export class XlsxFileExporter implements ISpreadsheetExporter {
-  exportToExcel(
-    rows: readonly TicketRecord[],
-    columns: readonly ColumnDefinition[],
+  exportToExcel<T extends Record<string, any> = TicketRecord>(
+    rows: readonly T[],
+    columns: readonly ColumnDefinition<string>[],
     outputFileName: string,
   ): void {
     const headerRow = columns.map((col) => col.header)

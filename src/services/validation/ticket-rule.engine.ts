@@ -1,22 +1,21 @@
 import type {
+  DuplicableTicketRecord,
   ITicketRuleEngine,
   ITicketValidationRule,
 } from '@/domain/contracts/validation-rule.contract'
-import type { TicketRecord } from '@/domain/models/ticket.model'
 import { AdministrativeDuplicateBackupRule } from '@/domain/rules/administrative-duplicate-backup.rule'
 
 export class TicketRuleEngine implements ITicketRuleEngine {
   constructor(
-    private readonly rules: readonly ITicketValidationRule[] = [
+    private readonly rules: readonly ITicketValidationRule<any>[] = [
       new AdministrativeDuplicateBackupRule(),
     ],
   ) {}
 
-  evaluateAll(records: TicketRecord[]): TicketRecord[] {
+  evaluateAll<T extends DuplicableTicketRecord>(records: T[]): T[] {
     return this.rules.reduce(
       (currentRecords, rule) => rule.apply(currentRecords),
       records,
     )
   }
 }
-

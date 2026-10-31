@@ -103,11 +103,13 @@ export const TICKET_COLUMNS_SCHEMA: readonly ColumnDefinition[] = [
     key: 'pausaClienteInicio',
     header: 'PAUSA CLIENTE INICIO',
     dataType: 'datetime',
+    isDescriptive: true,
   },
   {
     key: 'pausaClienteFin',
     header: 'PAUSA CLIENTE FIN',
     dataType: 'datetime',
+    isDescriptive: true,
   },
   {
     key: 'tiempoDePausaTotal',
@@ -235,6 +237,7 @@ export const TICKET_COLUMNS_SCHEMA: readonly ColumnDefinition[] = [
     key: 'usuarioPausa',
     header: 'Usuario Pausa',
     dataType: 'string',
+    isDescriptive: true,
   },
   {
     key: 'cantidadEvidenciasTerceros',

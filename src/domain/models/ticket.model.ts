@@ -53,9 +53,11 @@ export type TicketFieldKey = keyof TicketRecord
 
 export type ColumnFilterMode = 'text' | 'presence'
 
-export interface ColumnDefinition<K extends TicketFieldKey = TicketFieldKey> {
+export interface ColumnDefinition<K extends string = TicketFieldKey> {
   key: K
   header: string
+  headerAliases?: readonly string[]
+  fallbackColumnIndex?: number
   dataType: ColumnDataType
   filterMode?: ColumnFilterMode
   required?: boolean
@@ -65,10 +67,10 @@ export interface ColumnDefinition<K extends TicketFieldKey = TicketFieldKey> {
   allowedValues?: readonly string[]
 }
 
-export interface ExcelImportResult {
+export interface ExcelImportResult<T = TicketRecord> {
   fileName: string
-  columns: readonly ColumnDefinition[]
-  rows: TicketRecord[]
+  columns: readonly ColumnDefinition<string>[]
+  rows: T[]
   unmatchedExpectedHeaders: string[]
 }
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import AppBar from '@/components/layout/AppBar.vue'
+import AppFooter from '@/components/layout/AppFooter.vue'
 import AppSidebar from '@/components/layout/AppSidebar.vue'
 import ExcelLoaderOverlay from '@/components/validator/ExcelLoaderOverlay.vue'
 import TicketDataGrid from '@/components/validator/TicketDataGrid.vue'
@@ -37,7 +38,7 @@ const toggleSidebar = () => {
 
       <main class="main-content">
         <ValidatorHeader
-          title="Validador de duplicidad data en bruto"
+          title="Validador de duplicidad (bruto)"
           :file-name="fileName"
           :row-count="rows.length"
           :is-loading="isLoading"
@@ -61,6 +62,8 @@ const toggleSidebar = () => {
         />
       </main>
     </div>
+
+    <AppFooter />
   </div>
 </template>
 
@@ -68,14 +71,16 @@ const toggleSidebar = () => {
 .layout {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
   background-color: #f8fafc;
   color: #1e293b;
+  overflow: hidden;
 }
 
 .layout-body {
   display: flex;
   flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -83,15 +88,17 @@ const toggleSidebar = () => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 2rem;
+  padding: 0.6rem 1rem;
+  min-width: 0;
+  min-height: 0;
   overflow: hidden;
 }
 
 .alert {
-  padding: 0.65rem 1rem;
+  padding: 0.4rem 0.75rem;
   border-radius: 6px;
-  font-size: 0.85rem;
-  margin-bottom: 1rem;
+  font-size: 0.78rem;
+  margin-bottom: 0.45rem;
 }
 
 .alert-error {

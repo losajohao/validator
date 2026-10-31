@@ -2,14 +2,30 @@ import { computed, reactive, shallowRef, watch, type Ref } from 'vue'
 import type {
   ColumnDefinition,
   ColumnFilterMode,
-  TicketFieldKey,
-  TicketRecord,
 } from '@/domain/models/ticket.model'
 
-export type PresenceFilterValue = '' | 'WITH_CONTENT' | 'EMPTY'
+export type MotivoRetiroFilterValue =
+  | ''
+  | 'WITH_CONTENT'
+  | 'EMPTY'
+  | 'RULE_DUPLICATE'
+  | 'RULE_OUT_OF_CONTRACT'
+  | 'RULE_SINGLE_LINK'
+
+export const MOTIVO_RETIRO_FILTER_OPTIONS: ReadonlyArray<{
+  value: MotivoRetiroFilterValue
+  label: string
+}> = [
+  { value: '', label: 'Todos' },
+  { value: 'WITH_CONTENT', label: 'Con contenido (Todos los retirados)' },
+  { value: 'EMPTY', label: 'Sin contenido' },
+  { value: 'RULE_DUPLICATE', label: '1. Por duplicidad' },
+  { value: 'RULE_OUT_OF_CONTRACT', label: '2. Fuera de contrato' },
+  { value: 'RULE_SINGLE_LINK', label: '3. Afectación solo 1 enlace' },
+]
 
 interface AppliedFilterEntry {
-  key: TicketFieldKey
+  key: string
   mode: ColumnFilterMode
   value: string
 }
@@ -29,29 +45,55 @@ export function hasCellContent(value: unknown): boolean {
   return true
 }
 
-export function isPresenceColumn(col: ColumnDefinition): boolean {
+export function isPresenceColumn(col: ColumnDefinition<string>): boolean {
   return col.filterMode === 'presence' || col.key === 'motivoRetiro'
 }
 
-export function useTicketFilter(
-  rows: Ref<readonly TicketRecord[]>,
-  columns: Ref<readonly ColumnDefinition[]>,
+function normalizeForSearch(value: unknown): string {
+  return String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+}
+
+function matchesMotivoRetiroFilter(cellValue: unknown, filterValue: string): boolean {
+  const contentPresent = hasCellContent(cellValue)
+
+  if (filterValue === 'WITH_CONTENT') {
+    return contentPresent
+  }
+  if (filterValue === 'EMPTY') {
+    return !contentPresent
+  }
+  if (!contentPresent) {
+    return false
+  }
+
+  const normalizedCell = normalizeForSearch(cellValue)
+  switch (filterValue as MotivoRetiroFilterValue) {
+    case 'RULE_DUPLICATE':
+      return normalizedCell.includes('retira por duplicidad')
+    case 'RULE_OUT_OF_CONTRACT':
+      return normalizedCell.includes('fuera de contrato')
+    case 'RULE_SINGLE_LINK':
+      return normalizedCell.includes('solo se afecto enlace')
+    default:
+      return true
+  }
+}
+
+export function useTicketFilter<T extends Record<string, any> = Record<string, any>>(
+  rows: Ref<readonly T[]>,
+  columns: Ref<readonly ColumnDefinition<string>[]>,
 ) {
-  const initialFilters = {} as Record<TicketFieldKey, string>
+  const initialFilters: Record<string, string> = {}
   for (const col of columns.value) {
     initialFilters[col.key] = ''
   }
 
-  const columnFilters = reactive<Record<TicketFieldKey, string>>(initialFilters)
+  const columnFilters = reactive<Record<string, string>>(initialFilters)
   const appliedColumnFilters = shallowRef<AppliedFilterEntry[]>([])
-
-  const normalizeForSearch = (value: unknown): string => {
-    return String(value ?? '')
-      .trim()
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-  }
 
   const applyFilters = () => {
     const entries: AppliedFilterEntry[] = []
@@ -60,7 +102,7 @@ export function useTicketFilter(
       const rawVal = String(columnFilters[col.key] ?? '').trim()
 
       if (mode === 'presence') {
-        if (rawVal === 'WITH_CONTENT' || rawVal === 'EMPTY') {
+        if (rawVal !== '') {
           entries.push({ key: col.key, mode: 'presence', value: rawVal })
         }
       } else {
@@ -73,13 +115,22 @@ export function useTicketFilter(
     appliedColumnFilters.value = entries
   }
 
-  const setPresenceFilter = (key: TicketFieldKey, value: string) => {
+  const setPresenceFilter = (key: string, value: string) => {
     columnFilters[key] = value
     applyFilters()
   }
 
   watch(rows, () => {
     applyFilters()
+  })
+
+  watch(columns, (newCols) => {
+    for (const col of newCols) {
+      if (!(col.key in columnFilters)) {
+        columnFilters[col.key] = ''
+      }
+    }
+    appliedColumnFilters.value = []
   })
 
   const hasActiveFilters = computed(() => {
@@ -90,7 +141,7 @@ export function useTicketFilter(
     return columns.value.some((col) => String(columnFilters[col.key] ?? '').trim() !== '')
   })
 
-  const filteredRows = computed<readonly TicketRecord[]>(() => {
+  const filteredRows = computed<readonly T[]>(() => {
     const activeCols = appliedColumnFilters.value
 
     if (activeCols.length === 0) {
@@ -100,11 +151,7 @@ export function useTicketFilter(
     return rows.value.filter((row) => {
       for (const filter of activeCols) {
         if (filter.mode === 'presence') {
-          const contentPresent = hasCellContent(row[filter.key])
-          if (filter.value === 'WITH_CONTENT' && !contentPresent) {
-            return false
-          }
-          if (filter.value === 'EMPTY' && contentPresent) {
+          if (!matchesMotivoRetiroFilter(row[filter.key], filter.value)) {
             return false
           }
         } else {
