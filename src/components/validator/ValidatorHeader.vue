@@ -170,4 +170,25 @@ const onFileChange = (event: Event) => {
   opacity: 0.65;
   cursor: not-allowed;
 }
+
+@media (max-width: 768px) {
+  .main-header {
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .title-group {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .page-title {
+    font-size: 0.98rem;
+  }
+
+  .actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
 </style>

@@ -8,7 +8,7 @@ import ExcelLoaderOverlay from '@/components/validator/ExcelLoaderOverlay.vue'
 import TicketDataGrid from '@/components/validator/TicketDataGrid.vue'
 import { useAnalyzedImporter } from '@/composables/useAnalyzedImporter'
 
-const isSidebarOpen = ref(true)
+const isSidebarOpen = ref(typeof window !== 'undefined' ? window.innerWidth > 768 : true)
 
 const {
   activeTab,
@@ -40,7 +40,7 @@ const toggleSidebar = () => {
     <AppBar @toggle-sidebar="toggleSidebar" />
 
     <div class="layout-body">
-      <AppSidebar :is-open="isSidebarOpen" />
+      <AppSidebar :is-open="isSidebarOpen" @close="isSidebarOpen = false" />
 
       <main class="main-content">
         <!-- Cabecera compacta en una sola fila: Título + Tabs + Botones -->
@@ -143,6 +143,7 @@ const toggleSidebar = () => {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: 100dvh;
   background-color: #f8fafc;
   color: #1e293b;
   overflow: hidden;
@@ -286,5 +287,32 @@ const toggleSidebar = () => {
   background-color: #fffbeb;
   border: 1px solid #fde68a;
   color: #92400e;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 0.5rem 0.6rem;
+  }
+
+  .main-header {
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .header-left {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.4rem;
+  }
+
+  .page-title {
+    font-size: 0.98rem;
+  }
+
+  .actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
 }
 </style>

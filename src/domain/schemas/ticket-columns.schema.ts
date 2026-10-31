@@ -6,6 +6,11 @@ export const TICKET_COLUMNS_SCHEMA: readonly ColumnDefinition[] = [
     header: 'MOTIVO RETIRO',
     dataType: 'string',
     filterMode: 'presence',
+    filterOptions: [
+      { value: '', label: 'Todos' },
+      { value: 'WITH_CONTENT', label: 'Con contenido' },
+      { value: 'EMPTY', label: 'Sin contenido' },
+    ],
     isDescriptive: true,
     isComputed: true,
     isHighlightedResult: true,

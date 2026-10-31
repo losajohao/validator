@@ -4,8 +4,8 @@ import ColumnHeaderTooltip from '@/components/validator/ColumnHeaderTooltip.vue'
 import DescriptiveCellPopup from '@/components/validator/DescriptiveCellPopup.vue'
 import TicketSummaryPopup from '@/components/validator/TicketSummaryPopup.vue'
 import {
+  DEFAULT_PRESENCE_FILTER_OPTIONS,
   isPresenceColumn,
-  MOTIVO_RETIRO_FILTER_OPTIONS,
   useTicketFilter,
 } from '@/composables/useTicketFilter'
 import type { ColumnDataType, ColumnDefinition } from '@/domain/models/ticket.model'
@@ -94,7 +94,7 @@ const typeLabels: Record<ColumnDataType, string> = {
                     @change="setPresenceFilter(col.key, ($event.target as HTMLSelectElement).value)"
                   >
                     <option
-                      v-for="opt in MOTIVO_RETIRO_FILTER_OPTIONS"
+                      v-for="opt in col.filterOptions ?? DEFAULT_PRESENCE_FILTER_OPTIONS"
                       :key="opt.value"
                       :value="opt.value"
                     >
@@ -215,7 +215,8 @@ const typeLabels: Record<ColumnDataType, string> = {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   padding: 0.4rem 0.75rem;
   background-color: #f8fafc;
   border-bottom: 1px solid #e2e8f0;
@@ -276,6 +277,7 @@ const typeLabels: Record<ColumnDataType, string> = {
   flex: 1;
   min-height: 0;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .data-grid {

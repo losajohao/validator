@@ -53,6 +53,11 @@ export type TicketFieldKey = keyof TicketRecord
 
 export type ColumnFilterMode = 'text' | 'presence'
 
+export interface ColumnFilterOption {
+  value: string
+  label: string
+}
+
 export interface ColumnDefinition<K extends string = TicketFieldKey> {
   key: K
   header: string
@@ -60,6 +65,7 @@ export interface ColumnDefinition<K extends string = TicketFieldKey> {
   fallbackColumnIndex?: number
   dataType: ColumnDataType
   filterMode?: ColumnFilterMode
+  filterOptions?: readonly ColumnFilterOption[]
   required?: boolean
   isDescriptive?: boolean
   isComputed?: boolean

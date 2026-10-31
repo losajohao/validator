@@ -8,7 +8,7 @@ import TicketDataGrid from '@/components/validator/TicketDataGrid.vue'
 import ValidatorHeader from '@/components/validator/ValidatorHeader.vue'
 import { useTicketImporter } from '@/composables/useTicketImporter'
 
-const isSidebarOpen = ref(true)
+const isSidebarOpen = ref(typeof window !== 'undefined' ? window.innerWidth > 768 : true)
 
 const {
   columns,
@@ -34,7 +34,7 @@ const toggleSidebar = () => {
     <AppBar @toggle-sidebar="toggleSidebar" />
 
     <div class="layout-body">
-      <AppSidebar :is-open="isSidebarOpen" />
+      <AppSidebar :is-open="isSidebarOpen" @close="isSidebarOpen = false" />
 
       <main class="main-content">
         <ValidatorHeader
@@ -72,6 +72,7 @@ const toggleSidebar = () => {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: 100dvh;
   background-color: #f8fafc;
   color: #1e293b;
   overflow: hidden;

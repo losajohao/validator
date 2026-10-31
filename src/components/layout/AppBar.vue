@@ -148,5 +148,35 @@ const emit = defineEmits<{
   font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .app-bar {
+    padding: 0 0.55rem;
+    gap: 0.35rem;
+  }
+
+  .user-alias {
+    display: none;
+  }
+
+  .user-badge {
+    padding: 0.18rem 0.5rem;
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-bar-title {
+    font-size: 0.85rem;
+  }
+
+  .user-name {
+    max-width: 115px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 </style>

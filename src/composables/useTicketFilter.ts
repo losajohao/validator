@@ -12,16 +12,13 @@ export type MotivoRetiroFilterValue =
   | 'RULE_OUT_OF_CONTRACT'
   | 'RULE_SINGLE_LINK'
 
-export const MOTIVO_RETIRO_FILTER_OPTIONS: ReadonlyArray<{
+export const DEFAULT_PRESENCE_FILTER_OPTIONS: ReadonlyArray<{
   value: MotivoRetiroFilterValue
   label: string
 }> = [
   { value: '', label: 'Todos' },
-  { value: 'WITH_CONTENT', label: 'Con contenido (Todos los retirados)' },
+  { value: 'WITH_CONTENT', label: 'Con contenido' },
   { value: 'EMPTY', label: 'Sin contenido' },
-  { value: 'RULE_DUPLICATE', label: '1. Por duplicidad' },
-  { value: 'RULE_OUT_OF_CONTRACT', label: '2. Fuera de contrato' },
-  { value: 'RULE_SINGLE_LINK', label: '3. Afectación solo 1 enlace' },
 ]
 
 interface AppliedFilterEntry {
