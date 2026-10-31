@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#f472b6" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Contorno de cabeza de rana con arcos de ojos superiores -->
+  <path d="M12 28 C8 20, 12 10, 21 12 C25 13, 27 16, 28 19 L36 19 C37 16, 39 13, 43 12 C52 10, 56 20, 52 28 C55 33, 54 42, 48 46 C43 50, 21 50, 16 46 C10 42, 9 33, 12 28 Z" />
+
+  <!-- Ojos en contorno -->
+  <circle cx="20" cy="19" r="4" />
+  <circle cx="44" cy="19" r="4" />
+
+  <!-- Pupilas blancas -->
+  <circle cx="20" cy="19" r="1.5" fill="#ffffff" stroke="none" />
+  <circle cx="44" cy="19" r="1.5" fill="#ffffff" stroke="none" />
+
+  <!-- Sonrisa de la rana -->
+  <path d="M22 34 Q32 41 42 34" />
+
+  <!-- Documento / Reporte superpuesto en esquina inferior derecha (solo contorno) -->
+  <rect x="38" y="34" width="20" height="24" rx="3" fill="#0f172a" stroke="#f472b6" stroke-width="3" />
+  <line x1="43" y1="41" x2="53" y2="41" stroke-width="2.6" />
+  <line x1="43" y1="46.5" x2="53" y2="46.5" stroke-width="2.6" />
+  <polyline points="43 52.5 46 55 53 49.5" stroke-width="2.6" />
+</svg>

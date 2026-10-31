@@ -21,6 +21,33 @@ const emit = defineEmits<{
       <span class="app-bar-title">{{ title ?? 'Gerep Validator' }}</span>
     </div>
 
+    <!-- Ícono minimalista en contorno rosa (cara de rana + reporte) -->
+    <div class="app-bar-center" title="Gerep Validator">
+      <svg
+        class="frog-outline-icon"
+        viewBox="0 0 64 64"
+        width="28"
+        height="28"
+        fill="none"
+        stroke="#f472b6"
+        stroke-width="3.2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-label="Gerep Validator Icon"
+      >
+        <path d="M12 28 C8 20, 12 10, 21 12 C25 13, 27 16, 28 19 L36 19 C37 16, 39 13, 43 12 C52 10, 56 20, 52 28 C55 33, 54 42, 48 46 C43 50, 21 50, 16 46 C10 42, 9 33, 12 28 Z" />
+        <circle cx="20" cy="19" r="4" />
+        <circle cx="44" cy="19" r="4" />
+        <circle cx="20" cy="19" r="1.5" fill="#ffffff" stroke="none" />
+        <circle cx="44" cy="19" r="1.5" fill="#ffffff" stroke="none" />
+        <path d="M22 34 Q32 41 42 34" />
+        <rect x="38" y="34" width="20" height="24" rx="3" fill="#0f172a" stroke="#f472b6" stroke-width="3" />
+        <line x1="43" y1="41" x2="53" y2="41" stroke-width="2.6" />
+        <line x1="43" y1="46.5" x2="53" y2="46.5" stroke-width="2.6" />
+        <polyline points="43 52.5 46 55 53 49.5" stroke-width="2.6" />
+      </svg>
+    </div>
+
     <div class="app-bar-right">
       <div class="user-badge">
         <span class="user-avatar" aria-hidden="true">
@@ -48,12 +75,23 @@ const emit = defineEmits<{
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
   z-index: 10;
   flex-shrink: 0;
+  position: relative;
 }
 
 .app-bar-left {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.app-bar-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.frog-outline-icon {
+  display: block;
 }
 
 .app-bar-right {
@@ -77,7 +115,7 @@ const emit = defineEmits<{
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #38bdf8;
+  color: #f472b6;
 }
 
 .user-name {
