@@ -34,7 +34,7 @@ export const ANALYZED_CRUCE_COLUMNS_SCHEMA: readonly ColumnDefinition<AnalyzedCr
     header: 'PUESTA EN OPERACIÓN',
     headerAliases: ['PUESTA EN OPERACION', 'FECHA PUESTA EN OPERACION', 'FECHA PUESTA EN OPERACIÓN'],
     fallbackColumnIndex: 22, // Columna W en Excel (índice 22 base 0)
-    dataType: 'datetime',
+    dataType: 'date',
   },
 ] as const
 

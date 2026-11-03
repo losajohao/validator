@@ -1,6 +1,6 @@
 import type { ICellValueParser } from '@/domain/contracts/excel-parser.contract'
 import type { ColumnDefinition } from '@/domain/models/ticket.model'
-import { formatDateDdMmYyyy } from '@/utils/date-time.util'
+import { formatDateDdMmYyyy, formatDateTimeDdMmYyyy } from '@/utils/date-time.util'
 
 export class CellValueParser implements ICellValueParser {
   parse(rawValue: unknown, column: ColumnDefinition<string>): string | number {
@@ -24,8 +24,11 @@ export class CellValueParser implements ICellValueParser {
         }
         return strValue
       }
-      case 'datetime': {
+      case 'date': {
         return formatDateDdMmYyyy(rawValue)
+      }
+      case 'datetime': {
+        return formatDateTimeDdMmYyyy(rawValue)
       }
       case 'enum':
       case 'string':
@@ -35,9 +38,14 @@ export class CellValueParser implements ICellValueParser {
   }
 
   private excelFractionToDuration(fractionOfDay: number): string {
-    const totalMinutes = Math.round(fractionOfDay * 24 * 60)
-    const hours = Math.floor(totalMinutes / 60)
-    const minutes = totalMinutes % 60
+    const totalSeconds = Math.round(fractionOfDay * 86400)
+    const hours = Math.floor(totalSeconds / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
+    const seconds = totalSeconds % 60
+
+    if (seconds > 0) {
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+    }
     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
   }
 }

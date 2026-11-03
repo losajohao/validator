@@ -103,6 +103,7 @@ const hideTooltip = () => {
   color: #475569;
 }
 
+.type-date,
 .type-datetime {
   background-color: #fef3c7;
   color: #b45309;

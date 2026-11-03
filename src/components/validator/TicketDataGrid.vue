@@ -29,7 +29,8 @@ const {
 const typeLabels: Record<ColumnDataType, string> = {
   number: 'NUM',
   string: 'TXT',
-  datetime: 'FECHA',
+  date: 'FECHA',
+  datetime: 'FECHA/HORA',
   duration: 'HH:MM',
   enum: 'CAT',
 }

@@ -1,4 +1,4 @@
-export type ColumnDataType = 'number' | 'string' | 'datetime' | 'duration' | 'enum'
+export type ColumnDataType = 'number' | 'string' | 'date' | 'datetime' | 'duration' | 'enum'
 
 export interface TicketRecord {
   motivoRetiro: string
